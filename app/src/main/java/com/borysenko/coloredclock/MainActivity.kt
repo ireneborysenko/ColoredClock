@@ -8,34 +8,30 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.app.Activity
 import android.graphics.Paint
-import android.os.Handler
+import android.view.Window
+import android.view.WindowManager
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : Activity() {
 
+    private val mCalendar = Calendar.getInstance()
+    private lateinit var mDate: Date
     private val DATE_FORMAT = SimpleDateFormat("HH:mm:ss", Locale.US)
     private val PAINT = Paint()
     private var mHalfWidth: Int = 0
     private var mHalfHeight:Int = 0
 
-    private val mCalendar = Calendar.getInstance()
-
-    private var mHandler: Handler? = null
-    private var mDate: Date? = null
-
-    private val mDrawRunner = Runnable { DrawView(this) }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         PAINT.color = Color.WHITE
         PAINT.isAntiAlias = true
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(DrawView(this))
 
-        mHandler = Handler()
         mDate = Date()
-
-        mHandler!!.post(mDrawRunner)
     }
 
     internal inner class DrawView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
@@ -66,12 +62,10 @@ class MainActivity : Activity() {
                     retry = false
                 } catch (e: InterruptedException) {
                 }
-                mHandler?.removeCallbacks(mDrawRunner)
             }
         }
 
         internal inner class DrawThread(private val surfaceHolder: SurfaceHolder) : Thread() {
-
             private var running = false
 
             fun setRunning(running: Boolean) {
@@ -92,6 +86,9 @@ class MainActivity : Activity() {
                         val hours = mCalendar.get(Calendar.HOUR_OF_DAY)
                         val minutes = mCalendar.get(Calendar.MINUTE)
                         val seconds = mCalendar.get(Calendar.SECOND)
+
+                        if (canvas == null)
+                            continue
 
                         canvas.drawColor(
                             Color.parseColor(String.format(Locale.US, "#%02d%02d%02d", hours, minutes, seconds)))
