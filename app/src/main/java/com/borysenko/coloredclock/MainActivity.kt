@@ -7,6 +7,9 @@ import android.graphics.Color
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.app.Activity
+import android.app.WallpaperManager
+import android.content.ComponentName
+import android.content.Intent
 import android.graphics.Paint
 import android.view.Window
 import android.view.WindowManager
@@ -32,6 +35,13 @@ class MainActivity : Activity() {
         setContentView(DrawView(this))
 
         mDate = Date()
+
+        val intent = Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER)
+        intent.putExtra(
+            WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+            ComponentName(this, ClockWallpaperService::class.java)
+        )
+        startActivity(intent)
     }
 
     internal inner class DrawView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {

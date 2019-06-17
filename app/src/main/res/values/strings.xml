@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ColoredClock</string>
+    <string name="description">Colored Clock</string>
 </resources>
